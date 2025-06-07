@@ -1,4 +1,4 @@
-    function x = exp_rvg(min_val, max_val, lambda, n)
+    function x = exponential(min_val, max_val, lambda, n)
 
     x = zeros(1, n);
 
