@@ -1,7 +1,7 @@
 function lcgV4(a, c, m, x0)
 
     if nargin < 4
-        x0 = mod(round(sum(clock) * 100), m);  % Use system time to randomize seed
+        x0 = mod(round(sum(clock) * 100), m);  %time system to randomize
     end
 
     b = 1;
