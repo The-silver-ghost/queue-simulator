@@ -6,14 +6,14 @@ function [refuel_times, inter_arrival_times] = simulate(method, num_vehicles, is
     if nargin < 3
         % Get user input if arguments not provided
         disp('=== Gas Station Time Generator ===');
-        
+
         if nargin < 1
             disp('Select random number generator type:');
             disp('1. Exponential');
             disp('2. LCG (Linear Congruential Generator)');
             disp('3. Uniform');
             choice = input('Enter choice (1-3): ');
-            
+
             switch choice
                 case 1
                     method = 'exponential';
@@ -25,11 +25,11 @@ function [refuel_times, inter_arrival_times] = simulate(method, num_vehicles, is
                     error('Invalid choice. Please enter 1, 2, or 3.');
             end
         end
-        
+
         if nargin < 2
             num_vehicles = input('Enter number of vehicles to simulate: ');
         end
-        
+
         if nargin < 3
             peak = input('Is it peak hours? (1 for yes, 0 for no): ');
             is_peak_hours = logical(peak);
@@ -41,39 +41,61 @@ function [refuel_times, inter_arrival_times] = simulate(method, num_vehicles, is
         % Shorter times during peak hours
         refuel_range = [0.05, 0.3];    % hours (3-18 minutes)
         arrival_range = [0.02, 0.2];   % hours (1.2-12 minutes)
-        lambda = 10;                   % for exponential distribution
+        lambda = 2;                   % for exponential distribution
     else
         % Longer times during non-peak hours
         refuel_range = [0.1, 0.5];     % hours (6-30 minutes)
         arrival_range = [0.05, 0.3];   % hours (3-18 minutes)
-        lambda = 5;                    % for exponential distribution
+        lambda = 1.5;                    % for exponential distribution
     end
 
     % Convert hours to minutes for display
     hours_to_minutes = @(h) round(h * 60 * 10)/10; % Round to 1 decimal
-    
+
+    % define starting value for inter arrival time and refuel time
+    beginValueRefuel = randi([1,4]);
+    beginValueInter = randi([1,3]);
+    numOfValuesInter = 0;
+    numOfValuesRefuel = 0;
+
+
     % Generate times based on selected method
     switch lower(method)
         case 'exponential'
-            % Generate refuel times using exponential function
-            refuel_hours = exponential(refuel_range(1), refuel_range(2), lambda);
-            inter_arrival_hours = exponential(arrival_range(1), arrival_range(2), lambda*1.5);
-            
+            % Generate probability for refuel time and inter arrival time using exponential function
+            refuel_hours_prob = exponential(refuel_range(1), refuel_range(2), lambda);
+            inter_arrival_hours_prob = exponential(arrival_range(1), arrival_range(2), lambda*1.5);
+
+            %find number of values generated
+            numOfValuesInter = length(inter_arrival_hours_prob);
+            numOfValuesRefuel = length(refuel_hours_prob);
+
+            % generate refuel times
+            for i = 1:numOfValuesRefuel
+              refuel_times(i) = beginValueRefuel;
+              beginValueRefuel += 1;
+            endfor
+
+            % generate inter arrival times
+            for i = 1:numOfValuesInter
+              inter_arrival_times(i) = beginValueInter;
+              beginValueInter += 1;
+            endfor
             % Convert to minutes
-            refuel_times = arrayfun(hours_to_minutes, refuel_hours);
-            inter_arrival_times = arrayfun(hours_to_minutes, inter_arrival_hours);
-            
+%            refuel_times = arrayfun(hours_to_minutes, refuel_hours);
+ %           inter_arrival_times = arrayfun(hours_to_minutes, inter_arrival_hours);
+
             % Ensure we have enough values
-            refuel_times = refuel_times(1:min(num_vehicles, length(refuel_times)));
-            inter_arrival_times = inter_arrival_times(1:min(num_vehicles, length(inter_arrival_times)));
-            
+  %          refuel_times = refuel_times(1:min(num_vehicles, length(refuel_times)));
+   %         inter_arrival_times = inter_arrival_times(1:min(num_vehicles, length(inter_arrival_times)));
+
             % Pad with zeros if needed
-            if length(refuel_times) < num_vehicles
-                refuel_times = [refuel_times, zeros(1, num_vehicles-length(refuel_times))];
-            end
-            if length(inter_arrival_times) < num_vehicles
-                inter_arrival_times = [inter_arrival_times, zeros(1, num_vehicles-length(inter_arrival_times))];
-            end
+    %        if length(refuel_times) < num_vehicles
+     %           refuel_times = [refuel_times, zeros(1, num_vehicles-length(refuel_times))];
+      %      end
+       %     if length(inter_arrival_times) < num_vehicles
+        %        inter_arrival_times = [inter_arrival_times, zeros(1, num_vehicles-length(inter_arrival_times))];
+         %   end
 
         case 'lcg'
             % Generate refuel times using LCG
@@ -81,39 +103,49 @@ function [refuel_times, inter_arrival_times] = simulate(method, num_vehicles, is
             c = 1013904223;
             lcg_results = lcgV4(a, c);
             refuel_times = hours_to_minutes(lcg_results * (refuel_range(2)-refuel_range(1)) + refuel_range(1));
-            
+
             % Generate inter-arrival times with different seed
             lcg_results = lcgV4(a+1, c+1); % Different parameters for variety
             inter_arrival_times = hours_to_minutes(lcg_results * (arrival_range(2)-arrival_range(1)) + arrival_range(1));
-            
+
             % Take first num_vehicles elements
             refuel_times = refuel_times(1:min(num_vehicles, end));
             inter_arrival_times = inter_arrival_times(1:min(num_vehicles, end));
 
         case 'uniform'
-            % Generate refuel times using uniform function
-            refuel_hours = uniform(refuel_range(1), refuel_range(2));
-            inter_arrival_hours = uniform(arrival_range(1), arrival_range(2));
-            
-            % Convert to minutes
-            refuel_times = arrayfun(hours_to_minutes, refuel_hours);
-            inter_arrival_times = arrayfun(hours_to_minutes, inter_arrival_hours);
-            
-            % Take first num_vehicles elements
-            refuel_times = refuel_times(1:min(num_vehicles, end));
-            inter_arrival_times = inter_arrival_times(1:min(num_vehicles, end));
+            % Generate probability using uniform function
+            refuel_hours_prob = uniform(0.1, 1);
+            inter_arrival_hours_prob = uniform(0.1, 1);
+
+            %find number of values generated
+            numOfValuesInter = length(inter_arrival_hours_prob);
+            numOfValuesRefuel = length(refuel_hours_prob);
+
+            % generate refuel times
+            for i = 1:numOfValuesRefuel
+              refuel_times(i) = beginValueRefuel;
+              beginValueRefuel += 1;
+            endfor
+
+            % generate inter arrival times
+            for i = 1:numOfValuesInter
+              inter_arrival_times(i) = beginValueInter;
+              beginValueInter += 1;
+            endfor
 
         otherwise
             error('Invalid method. Choose "exponential", "lcg", or "uniform".');
     end
-    
+
     % Display results
     disp('=== Generated Times ===');
     disp('Refuel Times (minutes):');
     disp(refuel_times);
+    disp(refuel_hours_prob);
     fprintf('Average refuel time: %.2f minutes\n', mean(refuel_times));
-    
+
     disp('Inter-Arrival Times (minutes):');
     disp(inter_arrival_times);
+    disp(inter_arrival_hours_prob);
     fprintf('Average inter-arrival time: %.2f minutes\n', mean(inter_arrival_times));
 end
