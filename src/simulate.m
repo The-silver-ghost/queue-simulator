@@ -53,10 +53,10 @@ function [refuel_times, inter_arrival_times] = simulate(method, num_vehicles, is
     hours_to_minutes = @(h) round(h * 60 * 10)/10; % Round to 1 decimal
 
     % define starting value for inter arrival time and refuel time
-    beginValueRefuel = randi([1,4]);
-    beginValueInter = randi([1,3]);
-    numOfValuesInter = 0;
-    numOfValuesRefuel = 0;
+    %beginValueRefuel = randi([1,4]);
+    %beginValueInter = randi([1,3]);
+    %numOfValuesInter = 0;
+    %numOfValuesRefuel = 0;
 
 
     % Generate times based on selected method
@@ -109,24 +109,8 @@ function [refuel_times, inter_arrival_times] = simulate(method, num_vehicles, is
 
         case 'uniform'
             % Generate probability using uniform function
-            refuel_hours_prob = uniform(0.1, 1);
-            inter_arrival_hours_prob = uniform(0.1, 1);
-
-            %find number of values generated
-            numOfValuesInter = length(inter_arrival_hours_prob);
-            numOfValuesRefuel = length(refuel_hours_prob);
-
-            % generate refuel times
-            for i = 1:numOfValuesRefuel
-              refuel_times(i) = beginValueRefuel;
-              beginValueRefuel += 1;
-            endfor
-
-            % generate inter arrival times
-            for i = 1:numOfValuesInter
-              inter_arrival_times(i) = beginValueInter;
-              beginValueInter += 1;
-            endfor
+            [refuel_times,refuel_hours_prob] = table(uniform(0.1, 1));
+            [inter_arrival_times,inter_arrival_hours_prob] = table(uniform(0.1, 1));
 
         otherwise
             error('Invalid method. Choose "exponential", "lcg", or "uniform".');
