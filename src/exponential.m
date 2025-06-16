@@ -22,11 +22,6 @@ function x = exponential(min_val, max_val, lambda)
                 if last_val >= min_val && last_val <= max_val
                     x = [x last_val];  % Add final value to add up to 1
                     total = total + last_val;
-
-                    % Display results
-                    disp('Generated exponential random values:')
-                    disp(x)
-                    fprintf('Total sum: %.6f\n', total);
                     return
                 else
                     break;

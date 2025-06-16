@@ -1,4 +1,4 @@
-function p=uniform(a,b)
+function probArrays=uniform(a,b)
   n = 1;
   total = 0;
   while (b > 0)
@@ -22,8 +22,9 @@ function p=uniform(a,b)
   endwhile
 
   if (total < 1)
-    probability_list(n) = (1-total) + probability_list(n)
+    probability_list(n) = (1-total) + probability_list(n);
   elseif (total>1)
-    probability_list(n) = probability_list(n) - (total-1)
+    probability_list(n) = probability_list(n) - (total-1);
   endif
+  probArrays = probability_list
 end
