@@ -26,4 +26,5 @@ function p=uniform(a,b)
   elseif (total>1)
     probability_list(n) = probability_list(n) - (total-1)
   endif
+  p = probability_list;
 end

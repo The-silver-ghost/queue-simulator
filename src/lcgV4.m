@@ -1,4 +1,4 @@
-function lcgV4(a, c, x0)
+function values = lcgV4(a, c, x0)
 m = 3 + (7-3)*(rand());
     if nargin < 4
         x0 = mod(round(sum(clock) * 100), m);  %time system to randomize
