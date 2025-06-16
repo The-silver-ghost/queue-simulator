@@ -81,36 +81,31 @@ function [refuel_times, inter_arrival_times] = simulate(method, num_vehicles, is
               inter_arrival_times(i) = beginValueInter;
               beginValueInter += 1;
             endfor
-            % Convert to minutes
-%            refuel_times = arrayfun(hours_to_minutes, refuel_hours);
- %           inter_arrival_times = arrayfun(hours_to_minutes, inter_arrival_hours);
-
-            % Ensure we have enough values
-  %          refuel_times = refuel_times(1:min(num_vehicles, length(refuel_times)));
-   %         inter_arrival_times = inter_arrival_times(1:min(num_vehicles, length(inter_arrival_times)));
-
-            % Pad with zeros if needed
-    %        if length(refuel_times) < num_vehicles
-     %           refuel_times = [refuel_times, zeros(1, num_vehicles-length(refuel_times))];
-      %      end
-       %     if length(inter_arrival_times) < num_vehicles
-        %        inter_arrival_times = [inter_arrival_times, zeros(1, num_vehicles-length(inter_arrival_times))];
-         %   end
 
         case 'lcg'
             % Generate refuel times using LCG
             a = 1664525;
             c = 1013904223;
-            lcg_results = lcgV4(a, c);
-            refuel_times = hours_to_minutes(lcg_results * (refuel_range(2)-refuel_range(1)) + refuel_range(1));
+            refuel_hours_prob = lcgV4(a, c);
 
             % Generate inter-arrival times with different seed
-            lcg_results = lcgV4(a+1, c+1); % Different parameters for variety
-            inter_arrival_times = hours_to_minutes(lcg_results * (arrival_range(2)-arrival_range(1)) + arrival_range(1));
+            inter_arrival_hours_prob = lcgV4(a+1, c+1); % Different parameters for variety
 
-            % Take first num_vehicles elements
-            refuel_times = refuel_times(1:min(num_vehicles, end));
-            inter_arrival_times = inter_arrival_times(1:min(num_vehicles, end));
+            %find number of values generated
+            numOfValuesInter = length(inter_arrival_hours_prob);
+            numOfValuesRefuel = length(refuel_hours_prob);
+
+            % generate refuel times
+            for i = 1:numOfValuesRefuel
+              refuel_times(i) = beginValueRefuel;
+              beginValueRefuel += 1;
+            endfor
+
+            % generate inter arrival times
+            for i = 1:numOfValuesInter
+              inter_arrival_times(i) = beginValueInter;
+              beginValueInter += 1;
+            endfor
 
         case 'uniform'
             % Generate probability using uniform function

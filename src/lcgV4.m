@@ -19,7 +19,4 @@ m = 3 + (7-3)*(rand());
         total = total + val;
         b = 1 - total;
     end
-
-    fprintf('Generated values:\n');
-    disp(values);
 end
