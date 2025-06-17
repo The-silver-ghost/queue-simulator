@@ -52,82 +52,32 @@ function [refuel_times, inter_arrival_times] = simulate(method, num_vehicles, is
     % Convert hours to minutes for display
     hours_to_minutes = @(h) round(h * 60 * 10)/10; % Round to 1 decimal
 
-    % define starting value for inter arrival time and refuel time
-    beginValueRefuel = randi([1,4]);
-    beginValueInter = randi([1,3]);
-    numOfValuesInter = 0;
-    numOfValuesRefuel = 0;
+    %define values
+    refuel_prob = [];
+    refuel_cdf = [];
+    iArriv_prob = [];
+    iArriv_cdf = [];
 
 
     % Generate times based on selected method
     switch lower(method)
         case 'exponential'
             % Generate probability for refuel time and inter arrival time using exponential function
-            refuel_hours_prob = exponential(refuel_range(1), refuel_range(2), lambda);
-            inter_arrival_hours_prob = exponential(arrival_range(1), arrival_range(2), lambda*1.5);
-
-            %find number of values generated
-            numOfValuesInter = length(inter_arrival_hours_prob);
-            numOfValuesRefuel = length(refuel_hours_prob);
-
-            % generate refuel times
-            for i = 1:numOfValuesRefuel
-              refuel_times(i) = beginValueRefuel;
-              beginValueRefuel += 1;
-            endfor
-
-            % generate inter arrival times
-            for i = 1:numOfValuesInter
-              inter_arrival_times(i) = beginValueInter;
-              beginValueInter += 1;
-            endfor
+            [refuel_times,refuel_prob,refuel_cdf] = table(exponential(refuel_range(1), refuel_range(2), lambda));
+            [inter_arrival_times,iArriv_prob,iArriv_cdf] = table(exponential(arrival_range(1), arrival_range(2), lambda*1.5));
 
         case 'lcg'
             % Generate refuel times using LCG
             a = 1664525;
             c = 1013904223;
-            refuel_hours_prob = lcgV4(a, c);
-
+            [refuel_times,refuel_prob,refuel_cdf] = table(lcgV4(a, c));
             % Generate inter-arrival times with different seed
-            inter_arrival_hours_prob = lcgV4(a+1, c+1); % Different parameters for variety
-
-            %find number of values generated
-            numOfValuesInter = length(inter_arrival_hours_prob);
-            numOfValuesRefuel = length(refuel_hours_prob);
-
-            % generate refuel times
-            for i = 1:numOfValuesRefuel
-              refuel_times(i) = beginValueRefuel;
-              beginValueRefuel += 1;
-            endfor
-
-            % generate inter arrival times
-            for i = 1:numOfValuesInter
-              inter_arrival_times(i) = beginValueInter;
-              beginValueInter += 1;
-            endfor
+            [inter_arrival_times,iArriv_prob,iArriv_cdf] = table(lcgV4(a+1, c+1)); % Different parameters for variety
 
         case 'uniform'
             % Generate probability using uniform function
-            refuel_hours_prob = uniform(0.1, 1);
-            inter_arrival_hours_prob = uniform(0.1, 1);
-
-            %find number of values generated
-            numOfValuesInter = length(inter_arrival_hours_prob);
-            numOfValuesRefuel = length(refuel_hours_prob);
-
-            % generate refuel times
-            for i = 1:numOfValuesRefuel
-              refuel_times(i) = beginValueRefuel;
-              beginValueRefuel += 1;
-            endfor
-
-            % generate inter arrival times
-            for i = 1:numOfValuesInter
-              inter_arrival_times(i) = beginValueInter;
-              beginValueInter += 1;
-            endfor
-
+            [refuel_times,refuel_prob,refuel_cdf] = table(uniform(0.1,1));
+            [inter_arrival_times,iArriv_prob,iArriv_cdf] = table(uniform(0.1,1));
         otherwise
             error('Invalid method. Choose "exponential", "lcg", or "uniform".');
     end
@@ -136,11 +86,17 @@ function [refuel_times, inter_arrival_times] = simulate(method, num_vehicles, is
     disp('=== Generated Times ===');
     disp('Refuel Times (minutes):');
     disp(refuel_times);
-    disp(refuel_hours_prob);
+    disp('Refuel Probability: ');
+    disp(refuel_prob);
+    disp('Refuel CDF: ');
+    disp(refuel_cdf);
     fprintf('Average refuel time: %.2f minutes\n', mean(refuel_times));
 
     disp('Inter-Arrival Times (minutes):');
     disp(inter_arrival_times);
-    disp(inter_arrival_hours_prob);
+    disp('Inter-Arrival Time Probability: ');
+    disp(iArriv_prob);
+    disp('Inter-Arrival Times CDF: ');
+    disp(iArriv_cdf);
     fprintf('Average inter-arrival time: %.2f minutes\n', mean(inter_arrival_times));
 end
