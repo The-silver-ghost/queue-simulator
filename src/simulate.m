@@ -57,6 +57,8 @@ function [refuel_times, inter_arrival_times] = simulate(method, num_vehicles, is
     refuel_cdf = [];
     iArriv_prob = [];
     iArriv_cdf = [];
+    refuel_table_header['Refuel Time' 'Probablility' 'CDF'];
+    iArriv_table_header['Inter-Arrival Time' 'Probablility' 'CDF'];
 
 
     % Generate times based on selected method
@@ -83,20 +85,20 @@ function [refuel_times, inter_arrival_times] = simulate(method, num_vehicles, is
     end
 
     % Display results
-    disp('=== Generated Times ===');
-    disp('Refuel Times (minutes):');
-    disp(refuel_times);
-    disp('Refuel Probability: ');
-    disp(refuel_prob);
-    disp('Refuel CDF: ');
-    disp(refuel_cdf);
-    fprintf('Average refuel time: %.2f minutes\n', mean(refuel_times));
+%    disp('=== Generated Times ===');
+ %   disp('Refuel Times (minutes):');
+  %  disp(refuel_times);
+   % disp('Refuel Probability: ');
+    %disp(refuel_prob);
+%    disp('Refuel CDF: ');
+ %   disp(refuel_cdf);
+  %  fprintf('Average refuel time: %.2f minutes\n', mean(refuel_times));
 
-    disp('Inter-Arrival Times (minutes):');
-    disp(inter_arrival_times);
-    disp('Inter-Arrival Time Probability: ');
-    disp(iArriv_prob);
-    disp('Inter-Arrival Times CDF: ');
-    disp(iArriv_cdf);
-    fprintf('Average inter-arrival time: %.2f minutes\n', mean(inter_arrival_times));
+    %disp('Inter-Arrival Times (minutes):');
+%    disp(inter_arrival_times);
+ %   disp('Inter-Arrival Time Probability: ');
+  %  disp(iArriv_prob);
+   % disp('Inter-Arrival Times CDF: ');
+    %disp(iArriv_cdf);
+%    fprintf('Average inter-arrival time: %.2f minutes\n', mean(inter_arrival_times));
 end
