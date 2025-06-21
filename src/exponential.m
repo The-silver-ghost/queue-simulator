@@ -1,6 +1,6 @@
 function x = exponential(min_val, max_val, lambda)
 
-    max_attempts = 10000;  % avoid infinite loops
+    max_attempts = 10000;
 
     for attempt = 1:max_attempts
         x = [];
@@ -11,7 +11,7 @@ function x = exponential(min_val, max_val, lambda)
             val = -log(1 - U) / lambda;
 
             if val < min_val || val > max_val
-                continue;  % Skip values outside range
+                continue;  
             end
 
             if total + val < 1
@@ -20,7 +20,7 @@ function x = exponential(min_val, max_val, lambda)
             else
                 last_val = 1 - total;
                 if last_val >= min_val && last_val <= max_val
-                    x = [x last_val];  % Add final value to add up to 1
+                    x = [x last_val];  
                     total = total + last_val;
                     return
                 else
